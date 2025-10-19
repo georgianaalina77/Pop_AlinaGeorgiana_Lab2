@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Pop_AlinaGeorgiana_Lab2.Data;
 using Pop_AlinaGeorgiana_Lab2.Models;
 
-namespace Pop_AlinaGeorgiana_Lab2.Pages.Books
+namespace Pop_AlinaGeorgiana_Lab2.Pages.Authores
 {
     public class CreateModel : PageModel
     {
@@ -20,24 +20,12 @@ namespace Pop_AlinaGeorgiana_Lab2.Pages.Books
         }
 
         public IActionResult OnGet()
-
         {
-            ViewData["AuthorID"] = new SelectList(
-                _context.Author
-                    .Select(a => new
-                    {
-                        a.ID,
-                        FullName = a.FirstName + " " + a.LastName
-                    }),
-                "ID",
-                "FullName"
-            );
-            ViewData["PublisherID"] = new SelectList(_context.Set<Publisher>(), "ID", "PublisherName");
             return Page();
         }
 
         [BindProperty]
-        public Book Book { get; set; } = default!;
+        public Author Author { get; set; } = default!;
 
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
@@ -47,7 +35,7 @@ namespace Pop_AlinaGeorgiana_Lab2.Pages.Books
                 return Page();
             }
 
-            _context.Book.Add(Book);
+            _context.Author.Add(Author);
             await _context.SaveChangesAsync();
 
             return RedirectToPage("./Index");

@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Pop_AlinaGeorgiana_Lab2.Data;
 using Pop_AlinaGeorgiana_Lab2.Models;
 
-namespace Pop_AlinaGeorgiana_Lab2.Pages.Publishers
+namespace Pop_AlinaGeorgiana_Lab2.Pages.Authores
 {
     public class IndexModel : PageModel
     {
@@ -19,12 +19,11 @@ namespace Pop_AlinaGeorgiana_Lab2.Pages.Publishers
             _context = context;
         }
 
-        public IList<Publisher> Publisher { get;set; } = default!;
-        
+        public IList<Author> Author { get;set; } = default!;
 
         public async Task OnGetAsync()
         {
-            Publisher = await _context.Publisher.ToListAsync();
+            Author = await _context.Author.ToListAsync();
         }
     }
 }

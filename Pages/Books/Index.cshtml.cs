@@ -19,11 +19,14 @@ namespace Pop_AlinaGeorgiana_Lab2.Pages.Books
             _context = context;
         }
 
-        public IList<Book> Book { get;set; } = default!;
+        public IList<Book> Book { get;set; } = new List<Book>() ;
 
         public async Task OnGetAsync()
         {
-            Book = await _context.Book.ToListAsync();
+            Book = await _context.Book
+                .Include(b => b.Author)
+                .Include(b => b.Publisher)
+                .ToListAsync();
         }
     }
 }
