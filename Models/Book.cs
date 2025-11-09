@@ -19,6 +19,7 @@ namespace Pop_AlinaGeorgiana_Lab2.Models
         public int? PublisherID { get; set; }
         public Publisher? Publisher { get; set; }//navigation property
 
+        public ICollection<Borrowing>? Borrowings { get; set; }
         public ICollection<BookCategory>? BookCategories { get; set; }
 
         
