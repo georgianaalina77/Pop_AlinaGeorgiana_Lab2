@@ -13,79 +13,98 @@ namespace Pop_AlinaGeorgiana_Lab2.Pages.Books
 {
     public class EditModel : BookCategoriesPageModel
     {
-        private readonly Pop_AlinaGeorgiana_Lab2.Data.Pop_AlinaGeorgiana_Lab2Context _context;
+        private readonly Pop_AlinaGeorgiana_Lab2Context _context;
 
-        public EditModel(Pop_AlinaGeorgiana_Lab2.Data.Pop_AlinaGeorgiana_Lab2Context context)
+        public EditModel(Pop_AlinaGeorgiana_Lab2Context context)
         {
             _context = context;
         }
 
         [BindProperty]
-        public Book Book { get; set; } = default!;
+        public Book Book { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
-
 
             Book = await _context.Book
-            .Include(b => b.Publisher)
-            .Include(b => b.BookCategories).ThenInclude(b => b.Category)
-            .AsNoTracking()
-            .FirstOrDefaultAsync(m => m.ID == id);
+                .Include(b => b.Author)
+                .Include(b => b.Publisher)
+                .Include(b => b.BookCategories).ThenInclude(b => b.Category)
+                .FirstOrDefaultAsync(m => m.ID == id);
+
             if (Book == null)
-            {
                 return NotFound();
-            }
+
+            
+            ViewData["AuthorID"] = new SelectList(
+                _context.Author.Select(a => new
+                {
+                    a.ID,
+                    FullName = a.FirstName + " " + a.LastName
+                }),
+                "ID",
+                "FullName",
+                Book.AuthorID   
+            );
+
+            ViewData["PublisherID"] = new SelectList(
+                _context.Publisher,
+                "ID",
+                "PublisherName",
+                Book.PublisherID
+            );
 
             PopulateAssignedCategoryData(_context, Book);
-            var authorList = _context.Author.Select(x => new
-            {
-                x.ID,
-                FullName = x.LastName + " " + x.FirstName
-            });
-            ViewData["AuthorID"] = new SelectList(authorList, "ID", "FullName");
-            ViewData["PublisherID"] = new SelectList(_context.Publisher, "ID",
-           "PublisherName");
+
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(int? id, string[]
-       selectedCategories)
+        public async Task<IActionResult> OnPostAsync(int? id, string[] selectedCategories)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var bookToUpdate = await _context.Book
-            .Include(i => i.Publisher)
-            .Include(i => i.BookCategories)
-            .ThenInclude(i => i.Category)
-            .FirstOrDefaultAsync(s => s.ID == id);
-            if (bookToUpdate == null)
-            {
-                return NotFound();
-            }
+                .Include(b => b.BookCategories).ThenInclude(bc => bc.Category)
+                .FirstOrDefaultAsync(b => b.ID == id);
 
+            if (bookToUpdate == null)
+                return NotFound();
+
+           
             if (await TryUpdateModelAsync<Book>(
-            bookToUpdate,
-            "Book",
-            i => i.Title, i => i.Author,
-            i => i.Price, i => i.PublishingDate, i => i.PublisherID))
+                bookToUpdate,
+                "Book",
+                b => b.Title,
+                b => b.Price,
+                b => b.PublishingDate,
+                b => b.PublisherID,
+                b => b.AuthorID      
+            ))
             {
                 UpdateBookCategories(_context, selectedCategories, bookToUpdate);
                 await _context.SaveChangesAsync();
                 return RedirectToPage("./Index");
             }
 
-            UpdateBookCategories(_context, selectedCategories, bookToUpdate);
+           
+            ViewData["AuthorID"] = new SelectList(
+                _context.Author,
+                "ID",
+                "FirstName",
+                bookToUpdate.AuthorID
+            );
+            ViewData["PublisherID"] = new SelectList(
+                _context.Publisher,
+                "ID",
+                "PublisherName",
+                bookToUpdate.PublisherID
+            );
+
             PopulateAssignedCategoryData(_context, bookToUpdate);
             return Page();
         }
     }
-
 }

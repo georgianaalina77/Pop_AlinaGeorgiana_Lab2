@@ -36,8 +36,31 @@ namespace Pop_AlinaGeorgiana_Lab2.Pages.Borrowings
                 return NotFound();
             }
             Borrowing = borrowing;
-           ViewData["BookID"] = new SelectList(_context.Book, "ID", "ID");
-           ViewData["MemberID"] = new SelectList(_context.Member, "ID", "ID");
+            ViewData["MemberID"] = new SelectList(
+          _context.Member
+              .Select(m => new
+              {
+                  m.ID,
+                  FullName = m.FirstName + " " + m.LastName
+              }),
+          "ID",
+          "FullName",
+          borrowing.MemberID
+      );
+
+            ViewData["BookID"] = new SelectList(
+                _context.Book
+                    .Include(b => b.Author)
+                    .Select(b => new
+                    {
+                        b.ID,
+                        Details = b.Title + " (" + b.Author.FirstName + " " + b.Author.LastName + ")"
+                    }),
+                "ID",
+                "Details",
+                borrowing.BookID
+            );
+
             return Page();
         }
 

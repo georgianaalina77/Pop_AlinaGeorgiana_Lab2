@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Pop_AlinaGeorgiana_Lab2.Models
 {
@@ -8,8 +9,13 @@ namespace Pop_AlinaGeorgiana_Lab2.Models
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
         public string? Adress { get; set; }
+
+        [Required]                     
+        [EmailAddress]               
         public string Email { get; set; }
+
         public string? Phone { get; set; }
+
         [Display(Name = "Full Name")]
         public string? FullName
         {
@@ -18,6 +24,7 @@ namespace Pop_AlinaGeorgiana_Lab2.Models
                 return FirstName + " " + LastName;
             }
         }
+
         public ICollection<Borrowing>? Borrowings { get; set; }
     }
 }
